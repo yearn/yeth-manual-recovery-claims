@@ -157,14 +157,13 @@ Generated inventory files:
 6. Workflow opens a PR that adds or updates the ledger row as `ready_to_pay`.
 7. CI validates typechecking, tests, ledger validation, and generated CSV output.
 8. Move the GitHub Project item to `ready_to_pay`.
-9. Payer sends WETH according to the approved manual payout.
-10. Operator runs the `Record Claim Transaction` workflow with `tx_kind = payout`.
-11. Workflow opens a PR that updates the ledger row to `paid`.
-12. Optional: call the claim contract `set_claimable([address], [0])`.
-13. Operator runs the `Record Claim Transaction` workflow with `tx_kind = zeroing`.
-14. Workflow opens a PR that updates the ledger row to `claimable_zeroed`.
-15. After a ledger PR merges, `Refresh Unclaimed Inventory` runs and opens a generated inventory PR if claimable state changed.
-16. Close the issue after the ledger and generated inventory are current.
+9. Payer executes one atomic transaction that sends WETH and calls the claim contract `set_claimable([address], [0])`.
+10. Operator runs the `Record Claim Transaction` workflow with `tx_kind = payout_and_zeroing`.
+11. Workflow opens a PR that updates the ledger row to `claimable_zeroed`, using the same transaction hash for payout and zeroing.
+12. After the ledger PR merges, `Refresh Unclaimed Inventory` runs and opens a generated inventory PR if claimable state changed.
+13. Close the issue after the ledger and generated inventory are current.
+
+If atomic payout and zeroing is not possible, use the two-step fallback: run `Record Claim Transaction` first with `tx_kind = payout`, then after `set_claimable([address], [0])` run it again with `tx_kind = zeroing`.
 
 ## Manual Workflows
 
@@ -227,8 +226,25 @@ Workflow: `Record Claim Transaction`
 Inputs:
 
 - `address`
-- `tx_kind`: `payout` or `zeroing`
+- `tx_kind`: `payout_and_zeroing`, `payout`, or `zeroing`
 - `tx_hash`
+
+For `payout_and_zeroing`, the workflow verifies both checks against the same transaction:
+
+- the transaction succeeded and contains an exact WETH transfer or direct ETH transfer to the ledger recipient for `manualPayoutWei`
+- `claimable(address) == 0` at the transaction block
+
+The ledger row is updated directly to `claimable_zeroed`, with both `payoutTxHash` and `claimableZeroedTxHash` set to the same transaction hash.
+
+Preferred payer instruction:
+
+```text
+Execute one atomic transaction containing:
+1. Transfer <manualPayoutWei> WETH to <recipient>
+2. Call claim contract set_claimable([<address>], [0])
+
+Return the transaction hash after it is mined.
+```
 
 For `payout`, the workflow verifies the transaction succeeded and contains either:
 

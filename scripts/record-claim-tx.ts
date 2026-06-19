@@ -14,14 +14,16 @@ const TRANSFER_TOPIC = toEventSelector("Transfer(address,address,uint256)");
 const program = new Command()
   .description("Record and verify a manual claim payout or claimable-zeroing transaction")
   .requiredOption("--address <address>", "snapshot claimant address")
-  .requiredOption("--tx-kind <kind>", "transaction kind: payout or zeroing")
+  .requiredOption("--tx-kind <kind>", "transaction kind: payout, zeroing, or payout_and_zeroing")
   .requiredOption("--tx-hash <hash>", "transaction hash")
   .option("--ledger <path>", "manual claim ledger path", DEFAULT_LEDGER_PATH);
+
+type TxKind = "payout" | "zeroing" | "payout_and_zeroing";
 
 program.parse();
 const options = program.opts<{
   address: string;
-  txKind: "payout" | "zeroing";
+  txKind: TxKind;
   txHash: Hex;
   ledger: string;
 }>();
@@ -31,8 +33,8 @@ try {
   if (rpcUrl === undefined || rpcUrl.trim() === "") {
     throw new Error("ETH_RPC_URL is required");
   }
-  if (options.txKind !== "payout" && options.txKind !== "zeroing") {
-    throw new Error("--tx-kind must be payout or zeroing");
+  if (!["payout", "zeroing", "payout_and_zeroing"].includes(options.txKind)) {
+    throw new Error("--tx-kind must be payout, zeroing, or payout_and_zeroing");
   }
   if (!isHash(options.txHash)) {
     throw new Error("--tx-hash must be a transaction hash");
@@ -54,13 +56,25 @@ try {
 async function verifyAndUpdateRow(
   client: PublicClient,
   row: ManualClaimRow,
-  txKind: "payout" | "zeroing",
+  txKind: TxKind,
   txHash: Hex
 ): Promise<ManualClaimRow> {
   if (txKind === "payout") {
     await verifyPayoutTx(client, row, txHash);
     console.log(`Verified payout transaction for ${row.address}`);
     return { ...row, status: "paid", payoutTxHash: txHash };
+  }
+
+  if (txKind === "payout_and_zeroing") {
+    await verifyPayoutTx(client, row, txHash);
+    await verifyZeroingTx(client, row, txHash);
+    console.log(`Verified atomic payout and zeroing transaction for ${row.address}`);
+    return {
+      ...row,
+      status: "claimable_zeroed",
+      payoutTxHash: txHash,
+      claimableZeroedTxHash: txHash
+    };
   }
 
   if (row.payoutTxHash === null) {
