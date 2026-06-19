@@ -308,14 +308,12 @@ GitHub Projects is coordination only. `data/manual-claims.jsonl` is the canonica
 
 Before enabling branch protection:
 
-- Confirm the GitHub teams in `.github/CODEOWNERS` exist.
-- Update `.github/CODEOWNERS` if the placeholder teams are not the real review teams.
 - Enable branch protection and require the validate workflow.
 - Require CODEOWNERS review for protected branches.
 
-Current CODEOWNERS references:
+Current CODEOWNERS:
 
-- `@yearn/recovery-reviewers`
-- `@yearn/recovery-engineering`
+- `@0xPickles`
+- `@0xkorin`
 
-Maintainers must update those entries to real GitHub teams before relying on CODEOWNERS for branch protection.
+These users must have write access to the repository before CODEOWNERS review can be required.
