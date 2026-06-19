@@ -1,0 +1,79 @@
+name: Manual yETH claim
+description: Submit a manual late yETH recovery claim request.
+title: "Manual yETH claim: <address>"
+labels:
+  - yeth-manual-claim
+  - needs-triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form for manual late yETH recovery claims only.
+
+        Do not share your seed phrase or private key. This process uses message signing only. Do not sign a transaction for verification.
+  - type: input
+    id: claimant-address
+    attributes:
+      label: Claimant address
+      description: The wallet address that appears in the yETH snapshot.
+      placeholder: "0x..."
+    validations:
+      required: true
+  - type: input
+    id: recipient-address
+    attributes:
+      label: Recipient address
+      description: The address that should receive the manual payout.
+      placeholder: "0x..."
+    validations:
+      required: true
+  - type: input
+    id: etherscan-signature-url
+    attributes:
+      label: Etherscan verified signature URL
+      description: Link to the verified signature page on Etherscan.
+      placeholder: "https://etherscan.io/verifiedSignatures/..."
+    validations:
+      required: false
+  - type: textarea
+    id: raw-signature
+    attributes:
+      label: Raw signature
+      description: Paste the full signature beginning with 0x.
+      render: text
+      placeholder: "0x..."
+    validations:
+      required: false
+  - type: textarea
+    id: signed-message
+    attributes:
+      label: Signed message
+      description: Paste the exact message that was signed.
+      render: text
+      placeholder: |
+        yETH manual late claim
+        Wallet: 0x...
+        Recipient: 0x...
+        Snapshot block: 23914085
+        Snapshot amount: ... ETH
+        Manual settlement amount: ... WETH
+        Date: YYYY-MM-DD
+        I understand this is a manual late claim for recovered principal only and does not mint Recovery Vault shares or include accrued yield.
+    validations:
+      required: false
+  - type: input
+    id: original-link
+    attributes:
+      label: Original support or GitHub issue link
+      description: Link to any prior support thread, GitHub issue, or related context.
+      placeholder: "https://..."
+    validations:
+      required: false
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Optional context for reviewers.
+      placeholder: Add any relevant operational context.
+    validations:
+      required: false
