@@ -1,1 +1,2 @@
 address,recipient,status,snapshotAmountWei,claimableWei,recoveryRateWei,manualPayoutWei,payoutToken,signatureUrl,githubIssueUrl,payoutTxHash,claimableZeroedTxHash,extractionBlock,notes
+0x1d0a2944a5BD421C5d84aE2F935bAFCD6bBE3d16,0x1d0a2944a5BD421C5d84aE2F935bAFCD6bBE3d16,ready_to_pay,11457663322397255498,11457663322397255498,319607900000000000,3661959713378409795,WETH,https://etherscan.io/verifySig/317205,https://github.com/yearn/yeth-manual-recovery-claims/issues/3,,,25351790,
