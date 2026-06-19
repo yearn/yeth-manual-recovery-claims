@@ -1,0 +1,80 @@
+name: Record Claim Transaction
+
+on:
+  workflow_dispatch:
+    inputs:
+      address:
+        description: Snapshot claimant address
+        required: true
+      tx_kind:
+        description: Transaction kind
+        required: true
+        type: choice
+        options:
+          - payout
+          - zeroing
+      tx_hash:
+        description: Transaction hash
+        required: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify transaction and update ledger
+        env:
+          ETH_RPC_URL: ${{ secrets.ETH_RPC_URL }}
+          CLAIM_ADDRESS: ${{ inputs.address }}
+          CLAIM_TX_KIND: ${{ inputs.tx_kind }}
+          CLAIM_TX_HASH: ${{ inputs.tx_hash }}
+        run: |
+          npm run record:tx -- \
+            --address "$CLAIM_ADDRESS" \
+            --tx-kind "$CLAIM_TX_KIND" \
+            --tx-hash "$CLAIM_TX_HASH"
+
+          npm run export:ledger
+          npm run validate
+
+      - name: Open pull request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CLAIM_ADDRESS: ${{ inputs.address }}
+          CLAIM_TX_KIND: ${{ inputs.tx_kind }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          if git diff --quiet -- data/manual-claims.jsonl data/generated/manual-claims.csv; then
+            echo "No ledger changes to propose."
+            exit 0
+          fi
+
+          BRANCH="automation/record-${CLAIM_TX_KIND}-${GITHUB_RUN_ID}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add data/manual-claims.jsonl data/generated/manual-claims.csv
+          git commit -m "chore(claims): record yETH manual claim transaction"
+          git push --set-upstream origin "$BRANCH"
+          gh pr create \
+            --base "$DEFAULT_BRANCH" \
+            --head "$BRANCH" \
+            --title "chore(claims): record ${CLAIM_TX_KIND} for ${CLAIM_ADDRESS}" \
+            --body "Records and verifies the ${CLAIM_TX_KIND} transaction for ${CLAIM_ADDRESS}."

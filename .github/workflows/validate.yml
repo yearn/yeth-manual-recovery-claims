@@ -1,0 +1,36 @@
+name: Validate
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run check
+
+      - name: Test
+        run: npm test
+
+      - name: Validate ledger
+        run: npm run validate
+
+      - name: Export ledger CSV
+        run: npm run export:ledger
+
+      - name: Require committed generated updates
+        run: git diff --exit-code

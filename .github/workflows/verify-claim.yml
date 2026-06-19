@@ -1,0 +1,99 @@
+name: Verify Claim
+
+on:
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: GitHub issue number for the claim
+        required: true
+      address:
+        description: Snapshot claimant address
+        required: true
+      recipient:
+        description: Manual payout recipient address
+        required: true
+      signature_url:
+        description: Etherscan verified signature URL
+        required: true
+      signature:
+        description: Raw hex signature
+        required: true
+      signed_message_base64:
+        description: Base64-encoded exact signed message
+        required: true
+      notes:
+        description: Optional ledger notes
+        required: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify signature and update ledger
+        env:
+          CLAIM_ADDRESS: ${{ inputs.address }}
+          CLAIM_RECIPIENT: ${{ inputs.recipient }}
+          CLAIM_ISSUE_NUMBER: ${{ inputs.issue_number }}
+          CLAIM_ISSUE_URL: https://github.com/${{ github.repository }}/issues/${{ inputs.issue_number }}
+          CLAIM_SIGNATURE_URL: ${{ inputs.signature_url }}
+          CLAIM_SIGNATURE: ${{ inputs.signature }}
+          CLAIM_SIGNED_MESSAGE_BASE64: ${{ inputs.signed_message_base64 }}
+          CLAIM_NOTES: ${{ inputs.notes }}
+        run: |
+          printf '%s' "$CLAIM_SIGNED_MESSAGE_BASE64" | base64 --decode > signed-message.txt
+
+          npm run upsert:claim -- \
+            --address "$CLAIM_ADDRESS" \
+            --recipient "$CLAIM_RECIPIENT" \
+            --issue-url "$CLAIM_ISSUE_URL" \
+            --signature-url "$CLAIM_SIGNATURE_URL" \
+            --signature "$CLAIM_SIGNATURE" \
+            --signed-message-file signed-message.txt \
+            --status ready_to_pay \
+            --notes "$CLAIM_NOTES"
+
+          npm run export:ledger
+          npm run validate
+
+      - name: Open pull request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CLAIM_ADDRESS: ${{ inputs.address }}
+          CLAIM_ISSUE_NUMBER: ${{ inputs.issue_number }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          if git diff --quiet -- data/manual-claims.jsonl data/generated/manual-claims.csv; then
+            echo "No ledger changes to propose."
+            exit 0
+          fi
+
+          BRANCH="automation/verify-claim-${CLAIM_ISSUE_NUMBER}-${GITHUB_RUN_ID}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add data/manual-claims.jsonl data/generated/manual-claims.csv
+          git commit -m "chore(claims): verify yETH manual claim"
+          git push --set-upstream origin "$BRANCH"
+          gh pr create \
+            --base "$DEFAULT_BRANCH" \
+            --head "$BRANCH" \
+            --title "chore(claims): verify manual claim for ${CLAIM_ADDRESS}" \
+            --body "Adds or updates the manual claim ledger row for #${CLAIM_ISSUE_NUMBER} after signature verification."
