@@ -1,0 +1,1 @@
+address,recipient,status,snapshotAmountWei,claimableWei,recoveryRateWei,manualPayoutWei,payoutToken,signatureUrl,githubIssueUrl,payoutTxHash,claimableZeroedTxHash,extractionBlock,notes
