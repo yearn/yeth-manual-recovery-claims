@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/yearn/yeth-manual-recovery-claims/schema/manual-claim.schema.json",
+  "title": "Manual yETH recovery claim ledger row",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "address",
+    "recipient",
+    "snapshotAmountWei",
+    "claimableWei",
+    "recoveryRateWei",
+    "manualPayoutWei",
+    "signature",
+    "signedMessage",
+    "signatureUrl",
+    "githubIssueUrl",
+    "status",
+    "payoutToken",
+    "payoutTxHash",
+    "claimableZeroedTxHash",
+    "extractionBlock",
+    "notes"
+  ],
+  "properties": {
+    "address": {
+      "type": "string",
+      "pattern": "^0x[a-fA-F0-9]{40}$"
+    },
+    "recipient": {
+      "type": "string",
+      "pattern": "^0x[a-fA-F0-9]{40}$"
+    },
+    "snapshotAmountWei": {
+      "$ref": "#/$defs/decimalWei"
+    },
+    "claimableWei": {
+      "$ref": "#/$defs/decimalWei"
+    },
+    "recoveryRateWei": {
+      "$ref": "#/$defs/decimalWei"
+    },
+    "manualPayoutWei": {
+      "$ref": "#/$defs/decimalWei"
+    },
+    "signature": {
+      "oneOf": [
+        { "type": "string", "pattern": "^0x[a-fA-F0-9]+$" },
+        { "type": "null" }
+      ]
+    },
+    "signedMessage": {
+      "oneOf": [
+        { "type": "string" },
+        { "type": "null" }
+      ]
+    },
+    "signatureUrl": {
+      "oneOf": [
+        { "type": "string", "format": "uri" },
+        { "type": "null" }
+      ]
+    },
+    "githubIssueUrl": {
+      "type": "string",
+      "format": "uri"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "needs_signature",
+        "signature_received",
+        "verified",
+        "ready_to_pay",
+        "paid",
+        "claimable_zeroed",
+        "exception"
+      ]
+    },
+    "payoutToken": {
+      "type": "string",
+      "const": "WETH"
+    },
+    "payoutTxHash": {
+      "oneOf": [
+        { "$ref": "#/$defs/txHash" },
+        { "type": "null" }
+      ]
+    },
+    "claimableZeroedTxHash": {
+      "oneOf": [
+        { "$ref": "#/$defs/txHash" },
+        { "type": "null" }
+      ]
+    },
+    "extractionBlock": {
+      "$ref": "#/$defs/decimalInteger"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "$defs": {
+    "decimalInteger": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)$"
+    },
+    "decimalWei": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)$"
+    },
+    "txHash": {
+      "type": "string",
+      "pattern": "^0x[a-fA-F0-9]{64}$"
+    }
+  }
+}

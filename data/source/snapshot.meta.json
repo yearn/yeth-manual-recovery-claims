@@ -1,0 +1,12 @@
+{
+  "sourceRepo": "https://github.com/yearn/yETH-snapshot",
+  "snapshotJsonUrl": "https://raw.githubusercontent.com/yearn/yETH-snapshot/master/snapshot.json",
+  "snapshotBlock": 23914085,
+  "claimContract": "0x9564850c7090B13794e6d1164B0826C0aEFf3143",
+  "yieldVault": "0xd7a540ba3626c0aa66e7DB4088971d0CD64695B6",
+  "recoveryVault": "0xE5387cd454Dcc542421c069C009D915Ab9EFaaFd",
+  "asset": {
+    "symbol": "WETH",
+    "address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+  }
+}
