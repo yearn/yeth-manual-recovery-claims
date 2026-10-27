@@ -48,7 +48,13 @@
       "signature": "0x3209f6ab66f35a05525d2d098d09184f189461a1530e400a5c3b12c17e1f9ed84fe65843238b929eede85e15b39c9c6357eb2642fb9345e8346ff32ac55230681b",
       "signedMessage": "yETH manual late claim\nWallet: 0x91461bAa27Ff1E0C3916c22E2F68D0E73A82E321\nRecipient: 0x91461bAa27Ff1E0C3916c22E2F68D0E73A82E321\nSnapshot block: 23914085\nSnapshot amount: 0.4187 ETH\nManual settlement amount: 0.4187 WETH\nDate 2026-08-01\nI understood this is a manual late claim for recovered principal only and does not mint Recovery Vault shares or include accrued yield.",
       "postedEoaSignatureVerifies": true,
-      "evidenceException": "The posted EOA signature verifies the posted message, but that message rounds the snapshot amount, states 0.4187 WETH instead of 0.133816168186036517 WETH, and differs from the canonical message format. Record the historical payout; maintainer review of this evidence exception remains open."
+      "evidenceException": "The posted EOA signature verifies the posted message, but that message rounds the snapshot amount, states 0.4187 WETH instead of 0.133816168186036517 WETH, and differs from the canonical message format. Record the historical payout; maintainer review of this evidence exception remains open.",
+      "disposition": {
+        "status": "settled",
+        "date": "2026-10-27",
+        "authority": "Maintainer instruction during reconciliation",
+        "decision": "Accept the completed historical settlement and close the claim while preserving the signature anomalies and limits of verification. No additional payment is authorized or required."
+      }
     },
     {
       "number": 8,
@@ -71,7 +77,13 @@
       "signature": "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000041fc3d5b541007fc1152c619d46611faa69a595faac0c22c43178179477e69c71433ef473aaef6b5e8e4ac330b99a6495d902371228b5e9892883e497e99ff4a341c00000000000000000000000000000000000000000000000000000000000000",
       "signedMessage": "yETH manual late claim\nWallet: 0xfc5453acf7807455d6bc6406a06d6a6bb26dff55\nRecipient: 0xfc5453acf7807455d6bc6406a06d6a6bb26dff55\nSnapshot block: 23914085\nSnapshot amount: 29.0105 ETH\nManual settlement amount: 29.0105 WETH\nDate 2026-08-25\nI understood this is a manual late claim for recovered principal only and does not mint Recovery Vault shares or include accrued yield.",
       "postedEoaSignatureVerifies": false,
-      "evidenceException": "The posted signature is an encoded envelope and does not verify with the repository EOA verifier. The message states 29.0105 WETH instead of 9.271996944457152436 WETH, rounds the snapshot amount, and differs from the canonical format. Wallet-specific signature verification and maintainer review remain open; no claim is made here that the wallet signature is invalid."
+      "evidenceException": "The posted signature is an encoded envelope and does not verify with the repository EOA verifier. The message states 29.0105 WETH instead of 9.271996944457152436 WETH, rounds the snapshot amount, and differs from the canonical format. Wallet-specific signature verification and maintainer review remain open; no claim is made here that the wallet signature is invalid.",
+      "disposition": {
+        "status": "settled",
+        "date": "2026-10-27",
+        "authority": "Maintainer instruction during reconciliation",
+        "decision": "Accept the completed historical settlement and close the claim while preserving the signature anomalies and limits of verification. No additional payment is authorized or required."
+      }
     },
     {
       "number": 9,
@@ -94,7 +106,13 @@
       "signature": "0x396bbf472f0ffadd2ac7a3c856829c716edf697c4f1e86b213d995dc1bb1c41a6f639aebd731decdc92a686223fe3d519a9131868eb04c0911cf4fcf4a8c9b3d1b",
       "signedMessage": "yETH manual late claim\nWallet: 0x1bf44e3b0dfc84046a416c2cd2040860ec593e53\nRecipient: 0x1bf44e3b0dfc84046a416c2cd2040860ec593e53\nSnapshot block: 23914085\nSnapshot amount: 5.4494 ETH\nDate: 2026-09-03\nI understand this is a manual late claim for recovered principal only and does not mint Recovery Vault shares or include accrued yield.",
       "postedEoaSignatureVerifies": true,
-      "evidenceException": "The posted EOA signature verifies the posted message, but that message rounds the snapshot amount and omits the manual settlement amount. Maintainer review of this evidence exception remains open."
+      "evidenceException": "The posted EOA signature verifies the posted message, but that message rounds the snapshot amount and omits the manual settlement amount. Maintainer review of this evidence exception remains open.",
+      "disposition": {
+        "status": "settled",
+        "date": "2026-10-27",
+        "authority": "Maintainer instruction during reconciliation",
+        "decision": "Accept the completed historical settlement and close the claim while preserving the signature anomalies and limits of verification. No additional payment is authorized or required."
+      }
     },
     {
       "number": 10,
@@ -117,7 +135,13 @@
       "signature": null,
       "signedMessage": null,
       "postedEoaSignatureVerifies": null,
-      "evidenceException": "No signature or signed message is present in the public issue. Maintainer review or a reference to the accepted authorization evidence remains open."
+      "evidenceException": "No signature or signed message is present in the public issue. Maintainer review or a reference to the accepted authorization evidence remains open.",
+      "disposition": {
+        "status": "settled",
+        "date": "2026-10-27",
+        "authority": "Maintainer instruction during reconciliation",
+        "decision": "Accept the completed historical settlement and close the claim while preserving the signature anomalies and limits of verification. No additional payment is authorized or required."
+      }
     }
   ]
 }
